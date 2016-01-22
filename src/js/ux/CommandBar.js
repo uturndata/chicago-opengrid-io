@@ -159,6 +159,7 @@ ogrid.CommandBar = ogrid.Class.extend({
             $("#ogrid-admin-ui").addClass('hide'); //avoid sliding windows look
             this._onManageClick();
         }
+        $("#ogrid-task-advanced-search").addClass('visible');
         //invoke clear
         this._onClearClick();
     },
@@ -175,6 +176,7 @@ ogrid.CommandBar = ogrid.Class.extend({
 
     _hideAllFunctions: function() {
         $('#ogrid-manage-btn').addClass('hide');
+        $('#ogrid-about-btn').addClass('hide');
         //$('#ogrid-advanced-btn').addClass('hide');
     },
 
