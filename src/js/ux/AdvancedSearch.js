@@ -605,6 +605,11 @@ ogrid.AdvancedSearch = ogrid.Class.extend({
                 //immediate execution
                 ogrid.Search.exec(search, {origin: 'advancedSearch', search: search});
             });
+
+            //on a mobile device, auto-hide advanced search pane
+            if (ogrid.App.mobileView()) {
+                me._hideMe();
+            }
         } catch (ex) {
             ogrid.Alert.error(ex.message);
         }
