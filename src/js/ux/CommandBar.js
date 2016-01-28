@@ -150,16 +150,18 @@ ogrid.CommandBar = ogrid.Class.extend({
         });
 
         //hide both admin and advanced search panels
-        if (this._isPanelVisible( $("#ogrid-task-advanced-search")) ) {
+        /*if (this._isPanelVisible( $("#ogrid-task-advanced-search")) ) {
             $("#ogrid-task-advanced-search").addClass('hide'); //avoid sliding windows look
             this._onAdvancedSearchClick();
+        }*/
+        if (ogrid.App.mobileView()) {
+            $("#ogrid-task-advanced-search").addClass('hide');
         }
 
         if (this._isPanelVisible( $("#ogrid-admin-ui")) ) {
             $("#ogrid-admin-ui").addClass('hide'); //avoid sliding windows look
             this._onManageClick();
         }
-        $("#ogrid-task-advanced-search").addClass('visible');
         //invoke clear
         this._onClearClick();
     },
@@ -214,7 +216,7 @@ ogrid.CommandBar = ogrid.Class.extend({
     },
 
     _onClearClick: function() {
-        //console.log("Clear clicked");
+        //console.log("Clear clicked", ogrid.App.mobileView());
         ogrid.Event.raise(ogrid.Event.types.CLEAR);
 
         //auto-hide menu when in mobile mode
