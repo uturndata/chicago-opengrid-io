@@ -80,6 +80,12 @@ gulp.task('templates-debug', function () {
         .pipe(gulp.dest('./debug/templates'));
 });
 
+//need to copy help html file
+gulp.task('copy-help-html', function () {
+    return gulp.src('./src/help.html')
+        .pipe(gulp.dest('./dist'));
+});
+
 gulp.task('html-debug', function(){
     return gulp.src('./src/index.html')
         .pipe(inject(
@@ -316,6 +322,7 @@ gulp.task('release',  function(cb) {
         'scripts',
         'env-settings',
         'html-release',
+        'copy-help-html',
         cb
     );
 });

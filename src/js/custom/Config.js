@@ -197,9 +197,9 @@ ogrid.Config = {
         //TODO: find out if there is a more dynamic way to read the media breakpoint used in BS
         mobileBreakPointWidth: 845
     },
-
     service: {
-        endpoint: 'http://localhost:8080/opengridservice/rest',
+        autologin: true,
+        endpoint: document.location.href.split("/opengrid/")[0]+"/opengrid-service/rest",
         timeout: 60000,  //timeout in ms
         maxresults: 6000,
         authUrl: 'users/token',
@@ -212,5 +212,8 @@ ogrid.Config = {
         //used for converting string to data value for comparing dates on auto-refresh highlighting
         //date format is determined by the service
         dateFormat: 'MM/DD/YYYY hh:mm:ss aa'
+    },
+    help: {
+
     }
 };

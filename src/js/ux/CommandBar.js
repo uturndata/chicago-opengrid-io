@@ -25,6 +25,7 @@ ogrid.CommandBar = ogrid.Class.extend({
         //setup event handlers on each button
         this._clrbutton.click($.proxy(this._onClearClick, this));
         $("#ogrid-advanced-btn").click($.proxy(this._onAdvancedSearchClick, this));
+        $("#ogrid-help-btn").click($.proxy(this._onHelpClick, this));
         $("#ogrid-manage-btn").click($.proxy(this._onManageClick, this));
         $("#ogrid-logout-item").click($.proxy(this._onLogout, this));
 
@@ -52,8 +53,40 @@ ogrid.CommandBar = ogrid.Class.extend({
             $('#ogrid-menu a').filter('.btn').removeClass('small-screen-menuitem');
         }
     },
+    _onHelpClick: function() {
+        if($("#ogrid-help").hasClass('hide')) {
+            $("#ogrid-help").removeClass('hide');
+            $("#ogrid-content").addClass('hide');
+        } else {
+            $("#ogrid-help").addClass('hide');
+            $("#ogrid-content").removeClass('hide');
+            return;
+        }
 
+        $.ajax({
+            url: './help.html',
+            type: 'POST',
+            async: true,
+            timeout: 60000,
+            success: function(data, txtStatus, jqXHR) {
+                $("#ogrid-help")[0].innerHTML = data;
+
+                if(ogrid.Config.help.configSectionTitle) {
+                    $('#config-section-div').removeClass('hide');
+                    $('#config-section-title')[0].innerHTML = ogrid.Config.help.configSectionTitle;
+                    $('#config-section-text')[0].innerHTML = ogrid.Config.help.configSectionText;
+                }
+            }
+        });
+    },
     _onAdvancedSearchClick: function() {
+        // If main content is hidden remove it and disable help.
+        if($("#ogrid-content").hasClass('hide')) {
+            $("#ogrid-help").addClass('hide');
+            $("#ogrid-content").removeClass('hide');
+            return;
+        }
+
         //we chose to use jquery's animate for this (instead of CSS3 transitions) to not have to worry about compatibility with older browsers
         if (!this._isPanelVisible( $("#ogrid-task-advanced-search")) ) {
 
@@ -162,6 +195,10 @@ ogrid.CommandBar = ogrid.Class.extend({
             $("#ogrid-admin-ui").addClass('hide'); //avoid sliding windows look
             this._onManageClick();
         }
+
+        if(ogrid.Config.helpButtonHide) {
+            $('#ogrid-help-btn').addClass('hide');
+        }
         //invoke clear
         this._onClearClick();
     },
@@ -178,7 +215,7 @@ ogrid.CommandBar = ogrid.Class.extend({
 
     _hideAllFunctions: function() {
         $('#ogrid-manage-btn').addClass('hide');
-        $('#ogrid-about-btn').addClass('hide');
+        //$('#ogrid-about-btn').addClass('hide');
         //$('#ogrid-advanced-btn').addClass('hide');
     },
 
@@ -216,6 +253,8 @@ ogrid.CommandBar = ogrid.Class.extend({
     },
 
     _onClearClick: function() {
+        $("#ogrid-help").addClass('hide');
+        $("#ogrid-content").removeClass('hide');
         //console.log("Clear clicked", ogrid.App.mobileView());
         ogrid.Event.raise(ogrid.Event.types.CLEAR);
 
