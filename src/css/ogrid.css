@@ -430,3 +430,11 @@ h6 > a {
 .bootstrap-table .fixed-table-toolbar .columns div[title='Heat Map'] .dropdown-menu {
   width: 165px;
 }
+
+.ogrid-logo-small {
+  width: 32px;
+  height: 32px;
+  /*padding-top: 9px;*/
+  margin-top: 10px;
+  margin-left: 10px;
+}

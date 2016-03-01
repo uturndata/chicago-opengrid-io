@@ -177,9 +177,17 @@ ogrid.CommandBar = ogrid.Class.extend({
                 '#ogrid-manage-btn',
                 accessList);
             //me._secureFunction(
-            //    me,
-            //    me._getRequiredAccess(ogrid.SecuredFunctions.ADVANCED_SEARCH),
-            //    '#ogrid-advanced-btn', accessList);
+                //me,
+                //me._getRequiredAccess(ogrid.SecuredFunctions.ADVANCED_SEARCH),
+                //‘#ogrid-advanced-btn', accessList);
+
+            //initialize Admin UI if not initialized and user is an admin
+            if (me._noAdminUI() && !$('#ogrid-manage-btn').hasClass('hide')) {
+                ogrid.adminUI(
+                    $('#ogrid-admin-ui'),
+                    {datasets: me._options.datasets}
+                );
+            }
         });
 
         //hide both admin and advanced search panels
@@ -196,13 +204,17 @@ ogrid.CommandBar = ogrid.Class.extend({
             this._onManageClick();
         }
 
-        if(ogrid.Config.helpButtonHide) {
-            $('#ogrid-help-btn').addClass('hide');
+        if(ogrid.Config.helpButtonHide === undefined || !ogrid.Config.helpButtonHide) {
+            $('#ogrid-help-btn').removeClass('hide');
         }
         //invoke clear
         this._onClearClick();
     },
 
+    //detects if admin UI is initialized
+    _noAdminUI: function() {
+        return $("#ogrid-admin-ui-body");
+    },
 
     _secureFunction: function(context, fnList, btn, accessList) {
         if (!context._userHasFunctionAccess(fnList, accessList)) {

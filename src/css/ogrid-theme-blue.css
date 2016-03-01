@@ -213,6 +213,14 @@ html, body {
     .ogrid-task-pane .form-control {
         padding-left: 0px;
     }
+    .navbar-brand {
+       display:none;
+    }
+
+    #ogrid-search {
+        margin-left: 10px;
+    }
+
 }
 
 /*make app name consistent with the command bar text color */
