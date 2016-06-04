@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>OpenGrid Admin Page</title>
+
+  <!-- force a refresh everytime, can mess with updates -->
+  <meta http-equiv="expires" content="0">
+
+  <meta charset="utf-8"><meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="./images/favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon/favicon-16x16.png">
+
+  <!-- To be injected by gulp inject plug-in at build time -->
+  <!-- inject:head:css -->
+  <!-- endinject -->
+
+  <!-- inject:head:js -->
+  <!-- endinject -->
+</head>
+
+<body>
+
+
+  <!-- To be injected by gulp inject plug-in at build time -->
+  <!-- inject:css -->
+  <!-- endinject -->
+
+  <!-- inject:js -->
+  <!-- endinject -->
+  <div id="adminForm" class="ogrid-login fade in">
+    <div class="panel panel-default admin-panel">
+      <div class="panel-heading"><img src="images/logo/opengrid-uturn-logo.png" alt="Open Grid Logo"><h2>OpenGrid</h2><h3>for Smart Cities</h3></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <label>Password:</label></br>
+            <input id="ogrid-admin-password" type="password" name="password" placeholder="Password" class="form-control">
+            <label><input type="checkbox" id="ogrid-admin-password-check" value="checked"> Change Password </label><br>
+            <span class="glyphicon glyphicon-lock"></span>
+          </div>
+          <div class="col-xs-12 hide" id="changePwdBox">
+            <label>Confirm Password:</label></br>
+            <input id="ogrid-admin-password-new" type="password" name="password-new" placeholder="New Password" class="form-control">
+            <span class="glyphicon glyphicon-lock"></span>
+          </div>
+          <div class="col-xs-12" id="adminButton">
+            <button id="verifyButton" type="submit" name="go" class="btn btn-block btn-info disabled">Verify</button><button id="changePwdButton" type="submit" name="go" class="btn btn-block btn-info disabled hide">Change Password</button>
+          </div>
+        </div>
+
+        <div class="alert alert-danger fade hide">The login failed due to invalid password or you do not have permissions to access the system.</div></br>
+        <div class="row hide" id="config-props">
+          <div class="col-xs-12">
+            <label>Help Section Header:</label>
+            <input id="ogrid-help-section-title" type="text" name="ogrid.Config.help.configSectionTitle" placeholder="ogrid.Config.help.configSectionTitle" class="form-control">
+          </div>
+          <div class="col-xs-12">
+            <label>Help Section Content:</label>
+            <textarea id="ogrid-help-section-text" type="text" name="ogrid.Config.help.configSectionText" placeholder="ogrid.Config.help.configSectionText" class="form-control" rows="10"></textarea>
+          </div>
+          <div class="col-xs-12">
+            <label>Plenario Attribute Default:</label>
+            <input id="pleanrio-attr-default" type="text" name="plenario.attribution.default" placeholder="plenario.attribution.default" class="form-control">
+          </div>
+          <div class="col-xs-12">
+            <label>Plenario Dataset Default:</label>
+            <input id="pleanrio-dataset-default" type="text" name="plenario.dataset.default" placeholder="plenario.dataset.default" class="form-control">
+          </div>
+          <div class="col-xs-12">
+            <label>Plenario Enable:</label>
+            <input id="plenario-enable-flag" type="text" name="plenario.enable" placeholder="plenario.enable" class="form-control">
+          </div>
+          <div class="col-xs-12">
+            <button id="configUpdateButton" type="submit" name="go" class="btn btn-block btn-info">Update</button>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+  var LoginModalController = {
+
+    verifyButton: '.admin-panel #verifyButton',
+    changePwdButton: '.admin-panel #changePwdButton',
+    configUpdateButton: '.admin-panel #configUpdateButton',
+
+    findElements: function () {
+      var base = this;
+
+      base.verifyButton = $(base.verifyButton);
+      base.changePwdButton = $(base.changePwdButton);
+      base.configUpdateButton = $(base.configUpdateButton);
+
+      return base;
+    },
+
+    _inputKeyup: function() {
+      if ( this._getPassword().trim().length > 0 ) {
+        //enable our submit button
+        $('.admin-panel #verifyButton').removeClass('disabled');
+      } else {
+        $('.admin-panel #verifyButton').addClass('disabled');
+      }
+
+      if ( this._changePwdChecked()) {
+        //enable our submit button
+        $('.admin-panel #changePwdBox').removeClass('hide');
+        $('.admin-panel #verifyButton').addClass('disabled');
+        $('.admin-panel #changePwdButton').removeClass('hide');
+
+        if ( this._getPassword().trim().length > 0 &&
+        this._getPasswordNew().trim().length > 0 ) {
+          //enable our submit button
+
+          $('.admin-panel #changePwdButton').removeClass('disabled');
+        } else {
+          $('.admin-panel #changePwdButton').addClass('disabled');
+        }
+
+      } else {
+        $('.admin-panel #changePwdBox').addClass('hide');
+        $('.admin-panel #changePwdButton').addClass('disabled');
+        $('.admin-panel #changePwdButton').addClass('hide');
+      }
+    },
+
+    _getPassword: function() {
+
+      return $('#ogrid-admin-password').val();
+    },
+
+    _changePwdChecked: function() {
+
+      return $('#ogrid-admin-password-check').prop('checked');
+    },
+
+    _getPasswordNew: function() {
+
+      return $('#ogrid-admin-password-new').val();
+    },
+    showError: function(msg) {
+      $('.admin-panel .alert').removeClass('hide').removeClass('alert-info').addClass("in").addClass("alert-danger");
+      $('.admin-panel .alert').html(msg);
+    },
+
+    hideError: function() {
+      $('.admin-panel .alert').addClass('hide');
+    },
+
+    addClickEvents: function () {
+      var base = this;
+
+      base.verifyButton.on("click", function(event) {
+        base.hideError();
+        var password= base._getPassword().trim();
+
+        var payload = {
+          action:"verify",
+          password: password.hashCode()
+        };
+
+        var url = ogrid.Config.service.endpoint + 'admin/access?payload=' + JSON.stringify(payload);
+        console.log('making rest call', url);
+
+        var promise = processGETReq(url, payload, true);
+
+
+        promise.done(function(response) {
+
+          console.log('response', response);
+
+          if(response[1] && response[1].result === 'success') {
+
+            $('.admin-panel #verifyButton').addClass('disabled');
+            $('.admin-panel #ogrid-admin-password-check').attr("disabled", true);
+            $('#config-props').removeClass('hide');
+
+            var configProp = response[0].config;
+
+            $('#ogrid-help-section-title').val(configProp['ogrid.Config.help.configSectionTitle']);
+            $('#ogrid-help-section-text').val(configProp['ogrid.Config.help.configSectionText']);
+            $('#pleanrio-attr-default').val(configProp['plenario.attribution.default']);
+            $('#pleanrio-dataset-default').val(configProp['plenario.dataset.default']);
+            $('#plenario-enable-flag').val(configProp['plenario.enable']);
+
+          } else {
+
+            if( response[0].errorMessage === 'No Config in Database') {
+              // No Config in the Database. Showing Chicago as Default config.
+              $('.admin-panel #verifyButton').addClass('disabled');
+              $('.admin-panel #ogrid-admin-password-check').attr("disabled", true);
+              $('#config-props').removeClass('hide');
+
+              var configProp = {
+                'ogrid.Config.help.configSectionTitle': 'Open Section',
+                'ogrid.Config.help.configSectionText': 'To be Configured',
+                'plenario.attribution.default':'Chicago',
+                'plenario.dataset.default':'Cook County',
+                'plenario.enable':true
+              }
+
+              $('#ogrid-help-section-title').val(configProp['ogrid.Config.help.configSectionTitle']);
+              $('#ogrid-help-section-text').val(configProp['ogrid.Config.help.configSectionText']);
+              $('#pleanrio-attr-default').val(configProp['plenario.attribution.default']);
+              $('#pleanrio-dataset-default').val(configProp['plenario.dataset.default']);
+              $('#plenario-enable-flag').val(configProp['plenario.enable']);
+
+            } else {
+              // Authentication Failure scenario
+              base.showError(response[0].errorMessage);
+            }
+          }
+        }).fail(function(error) {
+          // Error Scenario
+          base.showError('The Admin service cannot be reached at this time. Make sure an internet connection is available then try again.');
+        });
+      });
+
+      base.changePwdButton.on("click", function(event) {
+
+        var password = base._getPassword().trim();
+        var newPassword = base._getPasswordNew().trim();
+        var payload = {
+          action:"update",
+          password: password.hashCode(),
+          newPassword: newPassword.hashCode()
+        };
+
+        var url = ogrid.Config.service.endpoint + 'admin/access?payload=' + JSON.stringify(payload);
+
+        var promise = processGETReq(url, payload, false);
+
+        promise.done(function(response) {
+
+  if(response[0].result === 'failure') {
+            base.showError(response[0].errorMessage);
+
+
+          } else {
+            // Success scenario
+            base.showError('Password Successfully Changed.');
+          }
+        }).fail(function(error) {
+          // Error Scenario
+          base.showError('The Admin service cannot be reached at this time. Make sure an internet connection is available then try again.');
+        });
+      });
+
+      base.configUpdateButton.on("click", function(event) {
+
+        var payload = {
+          action:"update",
+          config: {'ogrid.Config.help.configSectionTitle' : $('#ogrid-help-section-title').val(),
+          'ogrid.Config.help.configSectionText' : $('#ogrid-help-section-text').val(),
+          'plenario.attribution.default' : $('#pleanrio-attr-default').val(),
+          'plenario.dataset.default' : $('#pleanrio-dataset-default').val(),
+          'plenario.enable' : $('#plenario-enable-flag').val()}
+        };
+
+        var url = ogrid.Config.service.endpoint + 'admin/config?payload=' + JSON.stringify(payload);
+        console.log('making rest call', url);
+
+        var promise = processGETReq(url, payload, true);
+
+        promise.done(function(response) {
+          console.log('response', response[0]);
+
+          if(response[0].result === 'success') {
+            base.showError('Config Updated Successfully');
+            // $('.admin-panel #verifyButton').addClass('disabled');
+            // $('.admin-panel #ogrid-admin-password-check').attr("disabled", true);
+            // $('#config-props').removeClass('hide');
+
+
+          } else {
+            // Success scenario
+            base.showError('Config Updated Successfully');
+          }
+        }).fail(function(error) {
+          // Error Scenario
+          base.showError('The Admin service cannot be reached at this time. Make sure an internet connection is available then try again.');
+        });
+      });
+
+      return base;
+    },
+
+    initialize: function () {
+      var base = this;
+      $('#ogrid-admin-password').keyup($.proxy(this._inputKeyup, this));
+      $('#ogrid-admin-password-new').keyup($.proxy(this._inputKeyup, this));
+      $('#ogrid-admin-password-check').click($.proxy(this._inputKeyup, this));
+
+      $('#ogrid-admin-password').focus();
+      base.findElements().addClickEvents();
+    }
+  };
+
+  $(document).ready(function() {
+
+    LoginModalController.initialize();
+  });
+  </script>
+
+</body>
+</html>

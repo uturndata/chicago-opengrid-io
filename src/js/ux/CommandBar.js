@@ -65,7 +65,7 @@ ogrid.CommandBar = ogrid.Class.extend({
 
         $.ajax({
             url: './help.html',
-            type: 'POST',
+            type: 'GET',
             async: true,
             timeout: 60000,
             success: function(data, txtStatus, jqXHR) {

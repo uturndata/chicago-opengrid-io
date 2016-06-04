@@ -38,7 +38,7 @@ ogrid.Main = ogrid.Class.extend({
 
         //set branding on title
         document.title = ogrid.Config.brand.applicationName;
-        $('.navbar-brand').text(ogrid.Config.brand.applicationName);
+        //$('.navbar-brand').text(ogrid.Config.brand.applicationName);
 
         //init alert
         ogrid.Alert.init(options.alert_div, options.alert_txt);
@@ -244,6 +244,7 @@ ogrid.Main = ogrid.Class.extend({
         var mobileNow = false;
         if (window.matchMedia('(max-width: ' + ogrid.Config.commandBar.mobileBreakPointWidth + 'px)').matches) {
             mobileNow = true;
+            $("#ogrid-task-advanced-search").removeClass('visible');
         } else {
             mobileNow = false;
         }

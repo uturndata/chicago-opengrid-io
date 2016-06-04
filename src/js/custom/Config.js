@@ -72,7 +72,7 @@ ogrid.Config = {
             //flag to indicate whether Esri's tiledMapLayer plug-in class will be used
             useEsri: true,
             options: {
-                attribution: 'City of Chicago, Esri, HERE, DeLorme, METI/NASA, USGS, USDA, EPA'
+                attribution: ''
             }
         }, {
             name: 'Aerial',

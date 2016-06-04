@@ -52,7 +52,7 @@ html, body {
 
 #ogrid-adv-content .panel-heading {
     cursor: pointer;
-    padding:5px 10px!important;
+    /*padding:5px 10px!important;*/
 }
 
 
@@ -76,29 +76,29 @@ html, body {
 
 	::-webkit-scrollbar-button:start:decrement,
     ::-webkit-scrollbar-button:end:increment { height: 0px; display: block; background-color: black;}
-        
+
     ::-webkit-scrollbar-track-piece {
         background-color: #73c4e1;          /*Global Track Peice(the slider noob.)*/
-        -webkit-border-radius: 6px;		
-    }       
+        -webkit-border-radius: 6px;
+    }
     ::-webkit-scrollbar-thumb:vertical {
         height: 50px;
         background-color: #2b323c;            /* Up/Down slider background*/
         -webkit-border-radius: 6px;
-    }        
+    }
     ::-webkit-scrollbar-thumb:horizontal {
         width: 50px;
         background-color: #666;            /* Side/Side slider background*/
         -webkit-border-radius: 3px;
     }
-	
+
 
 	::-moz-scrollbar {width: 8px;height: 6px;}
     ::-webkit-scrollbar {width: 8px;height: 6px;}
-	
+
     ::-moz-scrollbar-button:start:decrement,
     ::-moz-scrollbar-button:start:decrement { height: 0px; display: block; background-color: black;}
-	
+
 	::-moz-scrollbar-track-piece {
         background-color: #2b323c;          /*Global Track Peice(the slider noob.)*/
         -webkit-border-radius: 6px;
@@ -107,7 +107,7 @@ html, body {
         height: 50px;
         background-color: #666;            /* Up/Down slider background*/
         -webkit-border-radius: 6px;
-    } 
+    }
 	::-moz-scrollbar-thumb:horizontal {
         width: 50px;
         background-color: #666;            /* Side/Side slider background*/

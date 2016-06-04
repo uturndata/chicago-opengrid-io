@@ -435,6 +435,18 @@ h6 > a {
   width: 32px;
   height: 32px;
   /*padding-top: 9px;*/
-  margin-top: 10px;
+  margin-top: 8px;
   margin-left: 10px;
+}
+
+.uturn-dark-blue {
+  color: #187FB0 !important;
+  padding: 14px 15px 15px 14px;
+}
+
+.uturn-dark-blue span {
+  display: block;
+  font-size: 10px;
+  margin-left: 13px;
+  color: #A0C9E5;
 }

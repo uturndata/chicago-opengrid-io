@@ -1,0 +1,75 @@
+#adminForm {
+	position: fixed;
+	background-image: url("../images/background_lake_east.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+#adminForm h3{
+	color: #A0C9E5;
+}
+
+.admin-panel {
+  max-width: 500px;
+ margin-top:0px;
+ margin: 10px auto;
+}
+
+.admin-panel label {
+    margin-bottom: 0;
+    color: #2980b9;
+}
+
+.admin-panel .panel-heading {
+    padding: 0;
+}
+
+.admin-panel .panel-body {
+    padding: 0;
+}
+
+.admin-panel input {
+    background: rgba(107,107,107,0.9) !important;
+    border: 0px;
+    color: #fff;
+    margin-bottom: 10px;
+    padding-left: 30px;
+}
+
+.admin-panel textarea {
+    background: rgba(107,107,107,0.9) !important;
+    border: 0px;
+    color: #fff;
+    margin-bottom: 10px;
+    padding-left: 30px;
+    height: 100px !important;
+    overflow-y: scroll;
+}
+
+.admin-panel span.glyphicon {
+	color: #fff;
+	position: absolute;
+	left: 0;
+	padding: 30px 0 0 27px;
+}
+
+.admin-panel .alert {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.admin-panel .btn-block {
+    width: 40%;
+}
+
+.admin-panel  .btn-block+.btn-block {
+  margin-top: 0;
+}
+
+.admin-panel #verifyButton {
+    float: left;
+}
+
+.admin-panel #changePwdButton {
+    float: right;
+}
