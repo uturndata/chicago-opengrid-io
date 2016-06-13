@@ -5,9 +5,9 @@
 OpenGrid an open-source, interactive map platform that allows users to explore multiple data sources in an easy-to-use interface. Developed to support situational awareness, incident monitoring and responses, historical data retrieval, and real-time advanced analytics. Users can perform advanced queries to filter data, search within custom boundaries, or based on the users location. Other GIS data, such as weather and Shapefiles can be overlaid on the map with other data. OpenGrid is natively compatible with desktops and mobile devices.
 
 ## Important Links
-* User Documentation: http://opengrid.readthedocs.org
+* User Documentation: http://opengrid.readthedocs.io
 * Repository: https://github.com/Chicago/opengrid
-* Planning Documentation: https://github.com/Chicago/opengrid/wiki
+* Planning Documentation and Meeting Notes: https://github.com/Chicago/opengrid/wiki
 * Issues: https://github.com/Chicago/opengrid/issues
 * Mailing List & Discussion: https://groups.google.com/forum/#!forum/opengrid-chicago
 
@@ -34,7 +34,7 @@ git clone https://github.com/Chicago/opengrid.git
 
 After the initial OpenGrid Code has been downloaded install the dependencies [Phantom JS](http://phantomjs.org/download.html) and [npm](https://www.npmjs.com/package/npm).
 
-After the release package has been built deploy the files under the ./dist folder to your web server.  For complete instructions on the entire process reference the [build procedures](./Build%20Procedures/) document.
+After the release package has been built deploy the files under the ./dist folder to your web server.  For complete instructions on the entire process reference the [build procedures](http://opengrid.readthedocs.io/en/latest/Build%20Procedures/) document.
 
 ## Submit a bug
 

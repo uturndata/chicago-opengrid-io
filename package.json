@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "description": "OpenGrid Client - a visualization tool for useful data",
   "main": "js/app.js",
-  "dependencies": {
-    "gulp": "^3.9.0"
-  },
   "devDependencies": {
+    "browser-sync": "^2.11.1",
+    "del": "^2.2.0",
     "chai": "^3.2.0",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
@@ -22,6 +21,7 @@
     "gulp-rev": "^6.0.1",
     "gulp-sass": "^2.0.4",
     "gulp-uglify": "^1.2.0",
+    "gulp-sync": "^0.1.4",
     "mocha": "^2.2.5",
     "mocha-phantomjs": "^3.6.0",
     "rimraf": "^2.4.2",

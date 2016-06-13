@@ -96,7 +96,7 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
             else {
                 //sort by distance
                 if (a.feature.attributes.Distance > b.feature.attributes.Distance)
-                //the smaller distance the better
+                    //the smaller distance the better
                     return 1;
                 else if (a.feature.attributes.Distance < b.feature.attributes.Distance)
                     return -1;
@@ -123,7 +123,7 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
             });
             return filtered;
         } else
-        //return un-changed
+            //return un-changed
             return locations;
     },
 
@@ -213,8 +213,8 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
         $.ajax({
             //use ArcGIS online's geocoder server
             url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?outSr=4326&outFields=*&maxLocations=' +
-            (me._options.esriGeocodeMaxResults || 20) +
-            '&' + bbox + '&text=' + txt + '&f=json' + '&' + location,
+                (me._options.esriGeocodeMaxResults || 20) +
+                '&' + bbox + '&text=' + txt + '&f=json' + '&' + location,
             type: 'GET',
             async: true,
             timeout: ogrid.Config.service.timeout,

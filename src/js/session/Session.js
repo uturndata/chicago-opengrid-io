@@ -27,6 +27,51 @@ ogrid.Session = ogrid.Class.extend({
 
     //constructor
     init: function(loginContainer, appContainer, authUrl, authRenewUrl, onTimeout, options) {
+
+      // Initial verify process to check if the Config setup is completed
+      var payload = {
+        action:"initialLoad"
+      };
+
+      var url = ogrid.Config.service.endpoint + '/admin/access?payload=' + JSON.stringify(payload);
+      console.log('making rest call', url);
+
+      var promise = this._processGETReq(url, payload, true);
+
+      promise.done(function(response) {
+
+          console.log('response', response);
+          if(response[1] && response[1].result === 'success') {
+            var configProp = response[0].config;
+
+            var setupComplete = configProp['ogrid.Config.setup.complete'];
+            var mapCenter = configProp['ogrid.Config.map.mapLibraryOptions.center'];
+            if(typeof(mapCenter) !== undefined && mapCenter !== '') {
+              ogrid.Config.map.mapLibraryOptions.center = JSON.parse(mapCenter);
+            }
+
+            if(typeof(setupComplete) === 'undefined' || setupComplete !== 'true') {
+              console.log('setupComplete1', setupComplete);
+              window.location.href = window.location.protocol + "//" + window.location.host + "/admin.html";
+              return;
+            } else {
+              ogrid.Config.help.configSectionTitle = configProp['ogrid.Config.help.configSectionTitle'];
+              ogrid.Config.help.configSectionText = configProp['ogrid.Config.help.configSectionText'];
+            }
+          } else if(response[1] && response[1].result === 'failure') {
+
+            window.location.href = window.location.protocol + "//" + window.location.host + "/admin.html";
+            return;
+
+          } else {
+
+            ogrid.Alert.error('Your request can not be completed at this time. Please try again later.');
+          }
+        }).fail(function(error) {
+          // Error Scenario
+          ogrid.Alert.error('Your request can not be completed at this time. Please try again later.');
+        });
+
         if (options) {
             this._options = ($.extend(this._options, options));
         }
@@ -73,6 +118,17 @@ ogrid.Session = ogrid.Class.extend({
         if (this._onTimeout) {
             this._onTimeout();
         }
+    },
+
+    _processGETReq: function(url, payLoad, force) {
+        if(force) {
+          url = url + "&" + new Date().getTime();
+        }
+
+        return $.ajax({
+            type: 'GET',
+            url: url
+          });
     },
 
 

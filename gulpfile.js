@@ -3,6 +3,7 @@ var gulp = require('gulp'),
 
     // Gulp plugins
     rimraf = require('rimraf'),
+    del = require('del'),
     jshint = require('gulp-jshint'),
     sass = require('gulp-sass'),
     concat = require('gulp-concat'),
@@ -13,9 +14,12 @@ var gulp = require('gulp'),
     runSequence = require('run-sequence'),
     mocha = require('gulp-mocha'),
     series = require('stream-series'),
+    gulpsync = require('gulp-sync')(gulp),
     mochaPhantomJS = require('gulp-mocha-phantomjs'),
     rev = require('gulp-rev'),
     rename = require('gulp-rename');
+
+var browserSync = require('browser-sync').create();
 
 //add path of CSS files to inject last into the HTML file
 var injectLastCss=[
@@ -313,7 +317,7 @@ gulp.task('html-release', function(){
     if (revManifest === {}) {
         revManifest = JSON.parse(fs.readFileSync('./dist/rev-manifest.json', 'utf8'));
     }
-    return gulp.src('./src/index.html')
+    return gulp.src(['./src/index.html', './src/admin.html'])
         .pipe(inject(gulp.src(['./dist/**/lib*min.js', './dist/**/lib*.css'], {read: false}), {
             starttag: '<!-- inject:head:{{ext}} -->',
             ignorePath: '/dist/',
@@ -333,6 +337,7 @@ gulp.task('html-release', function(){
             )
         )
         .pipe(gulp.dest('./dist'))
+        .pipe(browserSync.stream());
 });
 //release tasks end ******************
 
@@ -382,7 +387,6 @@ gulp.task('release',  function(cb) {
     runSequence(
         'clean',
         'lint',
-        'test',
         'sass',
         'css',
 
@@ -398,4 +402,65 @@ gulp.task('release',  function(cb) {
 });
 
 // default task points to our release tasks
-gulp.task('default', ['release']);
+gulp.task('default', gulpsync.sync(['release']));
+
+gulp.task('clean-html', function(){
+  'use strict';
+  return del('./dist/*.html');
+});
+
+gulp.task('clean-css', function(){
+  'use strict';
+  return del('./dist/css/app*.css');
+});
+
+gulp.task('clean-scripts', function(){
+  'use strict';
+  return del('./dist/js/app*.js');
+});
+
+gulp.task('clean-env-settings', function(){
+  'use strict';
+  return del('./dist/config/Env*.js');
+});
+
+gulp.task('serve-sync-css', function(cb) {
+    runSequence('clean-html', 'clean-css', 'css-app', 'copy-help-html', 'html-release',
+    cb
+  );
+});
+
+gulp.task('serve-sync-scripts', function(cb) {
+    runSequence('clean-html', 'clean-scripts', 'scripts-app', 'copy-help-html', 'html-release',
+    cb
+  );
+});
+
+gulp.task('serve-sync-env-settings', function(cb) {
+    runSequence('clean-html', 'clean-env-settings', 'env-settings', 'copy-help-html', 'html-release',
+    cb
+  );
+});
+
+gulp.task('serve-sync-html', function(cb) {
+    runSequence('clean-html', 'copy-help-html', 'copy-help-html', 'html-release',
+    cb
+  );
+});
+
+gulp.task('serve', ['default'], function() {
+    'use strict';
+    browserSync.init({
+      server: {
+        baseDir: './dist/',
+        browser: 'chrome'
+      },
+      reloaDebounce: 5000
+    });
+
+    gulp.watch('config/*.js', ['serve-sync-env-settings']);
+    gulp.watch('src/js/**/*.js', ['serve-sync-scripts']);
+    gulp.watch('src/css/*.css', ['serve-sync-css']);
+    gulp.watch('src/*.html', ['serve-sync-html']);
+
+});

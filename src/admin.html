@@ -43,7 +43,7 @@
             <span class="glyphicon glyphicon-lock"></span>
           </div>
           <div class="col-xs-12 hide" id="changePwdBox">
-            <label>Confirm Password:</label></br>
+            <label>Confirm Password :</label></br>
             <input id="ogrid-admin-password-new" type="password" name="password-new" placeholder="New Password" class="form-control">
             <span class="glyphicon glyphicon-lock"></span>
           </div>
@@ -55,31 +55,38 @@
         <div class="alert alert-danger fade hide">The login failed due to invalid password or you do not have permissions to access the system.</div></br>
         <div class="row hide" id="config-props">
           <div class="col-xs-12">
-            <label>Help Section Header:</label>
+            <label>Map Library Options Center :</label>
+            <input id="ogrid-map-mapLibraryOptions-center" type="text" name="ogrid.Config.map.mapLibraryOptions.center" placeholder="ogrid.Config.map.mapLibraryOptions.center" class="form-control" />
+          </div>
+          <div class="col-xs-12">
+            <label>Help Page Section Header :</label>
             <input id="ogrid-help-section-title" type="text" name="ogrid.Config.help.configSectionTitle" placeholder="ogrid.Config.help.configSectionTitle" class="form-control">
           </div>
           <div class="col-xs-12">
-            <label>Help Section Content:</label>
+            <label>Help Page Section Content :</label>
             <textarea id="ogrid-help-section-text" type="text" name="ogrid.Config.help.configSectionText" placeholder="ogrid.Config.help.configSectionText" class="form-control" rows="10"></textarea>
           </div>
           <div class="col-xs-12">
-            <label>Plenario Attribute Default:</label>
-            <input id="pleanrio-attr-default" type="text" name="plenario.attribution.default" placeholder="plenario.attribution.default" class="form-control">
+            <label>Plenario:</label>
+            <input type="radio" name="plenario-enable-flag" value="true" checked> ON
+            <input type="radio" name="plenario-enable-flag" value="false"> OFF
           </div>
-          <div class="col-xs-12">
-            <label>Plenario Dataset Default:</label>
-            <input id="pleanrio-dataset-default" type="text" name="plenario.dataset.default" placeholder="plenario.dataset.default" class="form-control">
+          <div class="col-xs-12" id="plenario-geo-default-div">
+            <label>Plenario Default Geolocation :</label>
+            <textarea id="plenario-geo-default" type="text" name="plenario.geodefault" placeholder="plenario.geo.default" class="form-control" rows ="5" > </textarea>
           </div>
-          <div class="col-xs-12">
-            <label>Plenario Enable:</label>
-            <input id="plenario-enable-flag" type="text" name="plenario.enable" placeholder="plenario.enable" class="form-control">
+          <div class="col-xs-12" id ='plenario-attr-default-div'>
+            <label>Plenario Default Attribute :</label>
+            <input id="plenario-attr-default" type="text" name="plenario.attribution.default" placeholder="plenario.attribution.default" class="form-control">
+          </div>
+          <div class="col-xs-12" id="plenario-dataset-default-div">
+            <label>Plenario Default Dataset :</label>
+            <input id="plenario-dataset-default" type="text" name="plenario.dataset.default" placeholder="plenario.dataset.default" class="form-control">
           </div>
           <div class="col-xs-12">
             <button id="configUpdateButton" type="submit" name="go" class="btn btn-block btn-info">Update</button>
           </div>
         </div>
-
-
       </div>
     </div>
   </div>
@@ -91,6 +98,7 @@
     verifyButton: '.admin-panel #verifyButton',
     changePwdButton: '.admin-panel #changePwdButton',
     configUpdateButton: '.admin-panel #configUpdateButton',
+    plenarioConfigButton: $("input[name='plenario-enable-flag']"),
 
     findElements: function () {
       var base = this;
@@ -98,6 +106,7 @@
       base.verifyButton = $(base.verifyButton);
       base.changePwdButton = $(base.changePwdButton);
       base.configUpdateButton = $(base.configUpdateButton);
+      base.plenarioConfigButton = $(base.plenarioConfigButton);
 
       return base;
     },
@@ -167,7 +176,7 @@
           password: password.hashCode()
         };
 
-        var url = ogrid.Config.service.endpoint + 'admin/access?payload=' + JSON.stringify(payload);
+        var url = ogrid.Config.service.endpoint + '/admin/access?payload=' + JSON.stringify(payload);
         console.log('making rest call', url);
 
         var promise = processGETReq(url, payload, true);
@@ -185,11 +194,23 @@
 
             var configProp = response[0].config;
 
+            $('#ogrid-map-mapLibraryOptions-center').val(configProp['ogrid.Config.map.mapLibraryOptions.center']);
             $('#ogrid-help-section-title').val(configProp['ogrid.Config.help.configSectionTitle']);
             $('#ogrid-help-section-text').val(configProp['ogrid.Config.help.configSectionText']);
-            $('#pleanrio-attr-default').val(configProp['plenario.attribution.default']);
-            $('#pleanrio-dataset-default').val(configProp['plenario.dataset.default']);
-            $('#plenario-enable-flag').val(configProp['plenario.enable']);
+            $('#plenario-attr-default').val(configProp['plenario.attribution.default']);
+            $('#plenario-dataset-default').val(configProp['plenario.dataset.default']);
+            $('#plenario-geo-default').val(configProp['plenario.geo.default']);
+            $("input[name='plenario-enable-flag'][value=" + configProp['plenario.enable'] + "]").attr('checked', 'checked');
+
+            if('true' === configProp['plenario.enable']) {
+              $('#plenario-attr-default-div').css('display','block');
+              $('#plenario-dataset-default-div').css('display','block');
+              $('#plenario-geo-default-div').css('display','block');
+            } else {
+              $('#plenario-attr-default-div').css('display','none');
+              $('#plenario-dataset-default-div').css('display','none');
+              $('#plenario-geo-default-div').css('display','block');
+            }
 
           } else {
 
@@ -200,19 +221,26 @@
               $('#config-props').removeClass('hide');
 
               var configProp = {
+                'ogrid.Config.map.mapLibraryOptions.center': '[41.88432, -87.65211]',
                 'ogrid.Config.help.configSectionTitle': 'Open Section',
                 'ogrid.Config.help.configSectionText': 'To be Configured',
                 'plenario.attribution.default':'Chicago',
                 'plenario.dataset.default':'Cook County',
-                'plenario.enable':true
+                'plenario.dataset.default':'Cook County',
+                'plenario.enable':false
               }
 
+              $('#ogrid-map-mapLibraryOptions-center').val(configProp['ogrid.Config.map.mapLibraryOptions.center']);
               $('#ogrid-help-section-title').val(configProp['ogrid.Config.help.configSectionTitle']);
               $('#ogrid-help-section-text').val(configProp['ogrid.Config.help.configSectionText']);
-              $('#pleanrio-attr-default').val(configProp['plenario.attribution.default']);
-              $('#pleanrio-dataset-default').val(configProp['plenario.dataset.default']);
-              $('#plenario-enable-flag').val(configProp['plenario.enable']);
+              $("input[name='plenario-enable-flag'][value=" + configProp['plenario.enable'] + "]").attr('checked', 'checked');
+              $('#plenario-attr-default').val(configProp['plenario.attribution.default']);
+              $('#plenario-dataset-default').val(configProp['plenario.dataset.default']);
+              $('#plenario-geo-default').val(configProp['plenario.geo.default']);
 
+              $('#plenario-attr-default-div').css('display','none');
+              $('#plenario-dataset-default-div').css('display','none');
+              $('#plenario-deo-default-div').css('display','none');
             } else {
               // Authentication Failure scenario
               base.showError(response[0].errorMessage);
@@ -234,16 +262,14 @@
           newPassword: newPassword.hashCode()
         };
 
-        var url = ogrid.Config.service.endpoint + 'admin/access?payload=' + JSON.stringify(payload);
+        var url = ogrid.Config.service.endpoint + '/admin/access?payload=' + JSON.stringify(payload);
 
         var promise = processGETReq(url, payload, false);
 
         promise.done(function(response) {
 
-  if(response[0].result === 'failure') {
+          if(response[0].result === 'failure') {
             base.showError(response[0].errorMessage);
-
-
           } else {
             // Success scenario
             base.showError('Password Successfully Changed.');
@@ -254,18 +280,37 @@
         });
       });
 
-      base.configUpdateButton.on("click", function(event) {
+      base.plenarioConfigButton.on("click", function(event) {
 
+        var plenarioConfigButtonValue = $("input[name='plenario-enable-flag']:checked").val();
+
+        if('true' === plenarioConfigButtonValue) {
+          $('#plenario-attr-default-div').css('display','block');
+          $('#plenario-dataset-default-div').css('display','block');
+          $('#plenario-geo-default-div').css('display','block');
+        } else {
+          $('#plenario-attr-default-div').css('display','none');
+          $('#plenario-dataset-default-div').css('display','none');
+          $('#plenario-geo-default-div').css('display','none');
+        }
+      });
+
+      base.configUpdateButton.on("click", function(event) {
         var payload = {
           action:"update",
-          config: {'ogrid.Config.help.configSectionTitle' : $('#ogrid-help-section-title').val(),
-          'ogrid.Config.help.configSectionText' : $('#ogrid-help-section-text').val(),
-          'plenario.attribution.default' : $('#pleanrio-attr-default').val(),
-          'plenario.dataset.default' : $('#pleanrio-dataset-default').val(),
-          'plenario.enable' : $('#plenario-enable-flag').val()}
+          config: {
+                'ogrid.Config.map.mapLibraryOptions.center' : $('#ogrid-map-mapLibraryOptions-center').val(),
+                'ogrid.Config.help.configSectionTitle' : $('#ogrid-help-section-title').val(),
+                'ogrid.Config.help.configSectionText' : $('#ogrid-help-section-text').val(),
+                'ogrid.Config.setup.complete' : 'true',
+                'plenario.attribution.default' : $('#plenario-attr-default').val(),
+                'plenario.dataset.default' : $('#plenario-dataset-default').val(),
+                'plenario.geo.default' : $('#plenario-geo-default').val(),
+                'plenario.enable' : $("input[name='plenario-enable-flag']:checked").val()
+              }
         };
 
-        var url = ogrid.Config.service.endpoint + 'admin/config?payload=' + JSON.stringify(payload);
+        var url = ogrid.Config.service.endpoint + '/admin/config?payload=' + JSON.stringify(payload);
         console.log('making rest call', url);
 
         var promise = processGETReq(url, payload, true);
