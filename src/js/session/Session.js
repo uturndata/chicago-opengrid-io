@@ -46,13 +46,12 @@ ogrid.Session = ogrid.Class.extend({
 
             var setupComplete = configProp['ogrid.Config.setup.complete'];
             var mapCenter = configProp['ogrid.Config.map.mapLibraryOptions.center'];
-            if(typeof(mapCenter) !== undefined && mapCenter !== '') {
+            if(typeof(mapCenter) !== 'undefined' && mapCenter.trim() !== '') {
               ogrid.Config.map.mapLibraryOptions.center = JSON.parse(mapCenter);
             }
 
             if(typeof(setupComplete) === 'undefined' || setupComplete !== 'true') {
-              console.log('setupComplete1', setupComplete);
-              window.location.href = window.location.protocol + "//" + window.location.host + "/admin.html";
+              window.location.href = window.location.protocol + "//" + window.location.host + "/opengrid/admin.html";
               return;
             } else {
               ogrid.Config.help.configSectionTitle = configProp['ogrid.Config.help.configSectionTitle'];
@@ -60,7 +59,7 @@ ogrid.Session = ogrid.Class.extend({
             }
           } else if(response[1] && response[1].result === 'failure') {
 
-            window.location.href = window.location.protocol + "//" + window.location.host + "/admin.html";
+            window.location.href = window.location.protocol + "//" + window.location.host + "/opengrid/admin.html";
             return;
 
           } else {

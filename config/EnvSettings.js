@@ -3,7 +3,7 @@
 
 //ogrid.Config.service.endpoint = 'http://107.23.251.215/opengrid-service/rest/';
 
-ogrid.Config.service.endpoint = 'http://localhost:8080/opengridservice/rest';
+//ogrid.Config.service.endpoint = 'http://localhost:8080/opengridservice/rest';
 
 //ogrid.Config.service.endpoint = 'http://107.23.251.215/opengrid-service/rest';
 
