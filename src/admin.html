@@ -48,14 +48,14 @@
             <span class="glyphicon glyphicon-lock"></span>
           </div>
           <div class="col-xs-12" id="adminButton">
-            <button id="verifyButton" type="submit" name="go" class="btn btn-block btn-info disabled">Verify</button><button id="changePwdButton" type="submit" name="go" class="btn btn-block btn-info disabled hide">Change Password</button>
+            <button id="verifyButton" type="submit" name="go" class="btn btn-block btn-info">Verify</button><button id="changePwdButton" type="submit" name="go" class="btn btn-block btn-info disabled hide">Change Password</button>
           </div>
         </div>
 
         <div class="alert alert-danger fade hide">The login failed due to invalid password or you do not have permissions to access the system.</div></br>
         <div class="row hide" id="config-props">
           <div class="col-xs-12">
-            <label>Map Library Options Center :</label>
+            <label>Map Center (Lat/Long) :</label>
             <input id="ogrid-map-mapLibraryOptions-center" type="text" name="ogrid.Config.map.mapLibraryOptions.center" placeholder="ogrid.Config.map.mapLibraryOptions.center" class="form-control" />
           </div>
           <div class="col-xs-12">
@@ -67,37 +67,43 @@
             <textarea id="ogrid-help-section-text" type="text" name="ogrid.Config.help.configSectionText" placeholder="ogrid.Config.help.configSectionText" class="form-control" rows="10"></textarea>
           </div>
           <div class="col-xs-12">
-            <label>Plenario:</label>
-            <input type="radio" name="plenario-enable-flag" value="true" checked> ON
+            <label>Plenar.io:</label>
+            <input type="radio" name="plenario-enable-flag" value="true"> ON
             <input type="radio" name="plenario-enable-flag" value="false"> OFF
           </div>
           <div class="col-xs-12" id="plenario-geo-default-div">
-            <label>Plenario Default Geolocation :</label>
+            <label>Plenar.io Search Within Coordinates (Lat/Long) :</label>
             <textarea id="plenario-geo-default" type="text" name="plenario.geodefault" placeholder="plenario.geo.default" class="form-control" rows ="5" > </textarea>
           </div>
           <div class="col-xs-12" id ='plenario-attr-default-div'>
-            <label>Plenario Default Attribute :</label>
+            <label>Plenar.io Default Attribute :</label>
             <input id="plenario-attr-default" type="text" name="plenario.attribution.default" placeholder="plenario.attribution.default" class="form-control">
           </div>
           <div class="col-xs-12" id="plenario-dataset-default-div">
-            <label>Plenario Default Dataset :</label>
+            <label>Plenar.io Default Dataset :</label>
             <input id="plenario-dataset-default" type="text" name="plenario.dataset.default" placeholder="plenario.dataset.default" class="form-control">
           </div>
           <div class="col-xs-12">
-            <button id="configUpdateButton" type="submit" name="go" class="btn btn-block btn-info">Update</button>
+            <label>Upload Config File(*.txt or *.json) :</label>
+            <input type="file" id="fileinput"/>
+          </div>
+          <div class="col-xs-24">
+            <button id="configUpdateButton" type="submit" name="go" class="btn btn-block btn-info" style="float:left;">Update</button>
+            <button id="configExportButton" type="submit" name="go" class="btn btn-block btn-info" style="float:right;">Export Config</button>
+            <a download="Config.txt" id="downloadlink" style="display: none">Download</a>
           </div>
         </div>
+        <div class="panel-heading"><img src="images/admin/OpenGrid_Admin.png" alt="Open Grid Logo" style="width:100%;"></div>
       </div>
     </div>
   </div>
-
-
   <script>
   var LoginModalController = {
 
     verifyButton: '.admin-panel #verifyButton',
     changePwdButton: '.admin-panel #changePwdButton',
     configUpdateButton: '.admin-panel #configUpdateButton',
+    configExportButton: '.admin-panel #configExportButton',
     plenarioConfigButton: $("input[name='plenario-enable-flag']"),
 
     findElements: function () {
@@ -106,6 +112,7 @@
       base.verifyButton = $(base.verifyButton);
       base.changePwdButton = $(base.changePwdButton);
       base.configUpdateButton = $(base.configUpdateButton);
+      base.configExportButton = $(base.configExportButton);
       base.plenarioConfigButton = $(base.plenarioConfigButton);
 
       return base;
@@ -164,10 +171,55 @@
       $('.admin-panel .alert').addClass('hide');
     },
 
+    readFile: function() {
+
+      var f = $('#fileinput').prop('files')[0];
+      console.log(f);
+      if (!f) {
+        this.showError("Failed to load file");
+      } else if(!f.type.match('text.*') && f.type !== 'application/json') {
+        this.showError(f.name + " is not a valid text file.");
+      } else {
+          var r = new FileReader();
+          var base = this;
+          r.onload = function(e) {
+            try {
+              var configProp = JSON.parse(e.target.result);
+              console.log(configProp);
+              $('#ogrid-map-mapLibraryOptions-center').val(configProp['ogrid.Config.map.mapLibraryOptions.center']);
+              $('#ogrid-help-section-title').val(configProp['ogrid.Config.help.configSectionTitle']);
+              $('#ogrid-help-section-text').val(configProp['ogrid.Config.help.configSectionText']);
+              $('#plenario-attr-default').val(configProp['plenario.attribution.default']);
+              $('#plenario-dataset-default').val(configProp['plenario.dataset.default']);
+              $('#plenario-geo-default').val(configProp['plenario.geo.default']);
+
+              if('true' === configProp['plenario.enable']) {
+                $("input:radio[name='plenario-enable-flag'][value=true]").prop('checked', true);
+                $('#plenario-attr-default-div').css('display','block');
+                $('#plenario-dataset-default-div').css('display','block');
+                $('#plenario-geo-default-div').css('display','block');
+              } else {
+                $("input:radio[name='plenario-enable-flag'][value=false]").prop('checked', true);
+                $('#plenario-attr-default-div').css('display','none');
+                $('#plenario-dataset-default-div').css('display','none');
+                $('#plenario-geo-default-div').css('display','none');
+              }
+
+              base.hideError();
+            } catch(err) {
+              console.log('Error Occurred ', err);
+              base.showError('Error reading file, please check content again');
+            }
+          }
+          r.readAsText(f);
+      }
+    },
+
     addClickEvents: function () {
       var base = this;
 
       base.verifyButton.on("click", function(event) {
+
         base.hideError();
         var password= base._getPassword().trim();
 
@@ -180,7 +232,6 @@
         console.log('making rest call', url);
 
         var promise = processGETReq(url, payload, true);
-
 
         promise.done(function(response) {
 
@@ -200,16 +251,18 @@
             $('#plenario-attr-default').val(configProp['plenario.attribution.default']);
             $('#plenario-dataset-default').val(configProp['plenario.dataset.default']);
             $('#plenario-geo-default').val(configProp['plenario.geo.default']);
-            $("input[name='plenario-enable-flag'][value=" + configProp['plenario.enable'] + "]").attr('checked', 'checked');
+            $("input:radio[name='plenario-enable-flag'][value='" + eval(configProp['plenario.enable']) + "']").attr('checked', true);
 
             if('true' === configProp['plenario.enable']) {
+              $("input:radio[name='plenario-enable-flag'][value=true]").prop('checked', true);
               $('#plenario-attr-default-div').css('display','block');
               $('#plenario-dataset-default-div').css('display','block');
               $('#plenario-geo-default-div').css('display','block');
             } else {
+              $("input:radio[name='plenario-enable-flag'][value=false]").prop('checked', true);
               $('#plenario-attr-default-div').css('display','none');
               $('#plenario-dataset-default-div').css('display','none');
-              $('#plenario-geo-default-div').css('display','block');
+              $('#plenario-geo-default-div').css('display','none');
             }
 
           } else {
@@ -225,7 +278,6 @@
                 'ogrid.Config.help.configSectionTitle': 'Open Section',
                 'ogrid.Config.help.configSectionText': 'To be Configured',
                 'plenario.attribution.default':'Chicago',
-                'plenario.dataset.default':'Cook County',
                 'plenario.dataset.default':'Cook County',
                 'plenario.enable':false
               }
@@ -283,7 +335,7 @@
       base.plenarioConfigButton.on("click", function(event) {
 
         var plenarioConfigButtonValue = $("input[name='plenario-enable-flag']:checked").val();
-
+        console.log('plenarioConfigButtonValue', ('true' === plenarioConfigButtonValue));
         if('true' === plenarioConfigButtonValue) {
           $('#plenario-attr-default-div').css('display','block');
           $('#plenario-dataset-default-div').css('display','block');
@@ -319,11 +371,8 @@
           console.log('response', response[0]);
 
           if(response[0].result === 'success') {
-            base.showError('Config Updated Successfully');
-            // $('.admin-panel #verifyButton').addClass('disabled');
-            // $('.admin-panel #ogrid-admin-password-check').attr("disabled", true);
-            // $('#config-props').removeClass('hide');
-
+            window.location.href = window.location.protocol + "//" + window.location.host + "/";
+            return;
 
           } else {
             // Success scenario
@@ -333,6 +382,31 @@
           // Error Scenario
           base.showError('The Admin service cannot be reached at this time. Make sure an internet connection is available then try again.');
         });
+      });
+
+      base.configExportButton.on("click", function(event) {
+        var textFile = null;
+        var config = {
+          'ogrid.Config.map.mapLibraryOptions.center' : $('#ogrid-map-mapLibraryOptions-center').val(),
+          'ogrid.Config.help.configSectionTitle' : $('#ogrid-help-section-title').val(),
+          'ogrid.Config.help.configSectionText' : $('#ogrid-help-section-text').val(),
+          'ogrid.Config.setup.complete' : 'true',
+          'plenario.attribution.default' : $('#plenario-attr-default').val(),
+          'plenario.dataset.default' : $('#plenario-dataset-default').val(),
+          'plenario.geo.default' : $('#plenario-geo-default').val(),
+          'plenario.enable' : $("input[name='plenario-enable-flag']:checked").val()
+        };
+
+        var data = new Blob([JSON.stringify(config)], {type: 'text/plain'});
+
+        if (textFile !== null) {
+          window.URL.revokeObjectURL(textFile);
+        }
+
+        textFile = window.URL.createObjectURL(data);
+        var link = document.getElementById('downloadlink');
+        link.href = textFile;
+        $('#downloadlink')[0].click();
       });
 
       return base;
@@ -352,6 +426,7 @@
   $(document).ready(function() {
 
     LoginModalController.initialize();
+    $('#fileinput').on('change', function() {LoginModalController.readFile();});
   });
   </script>
 
