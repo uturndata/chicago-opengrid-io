@@ -83,6 +83,14 @@
             <label>Plenar.io Default Dataset :</label>
             <input id="plenario-dataset-default" type="text" name="plenario.dataset.default" placeholder="plenario.dataset.default" class="form-control">
           </div>
+          <div class="col-xs-12" id="quick-search-center-point-div">
+            <label>Quick Search Center Point :</label>
+            <input id="quick-search-center-point" type="text" name="quickSearch.plugInOptions.esriGeocodeLocation" placeholder="quickSearch.plugInOptions.esriGeocodeLocation" class="form-control">
+          </div>
+          <div class="col-xs-12" id="quick-search-bounding-box-div">
+            <label>Quick Search Bounding Box :</label>
+            <input id="quick-search-bounding-box" type="text" name="quickSearch.pluginOptions.esriGeocodeBBox" placeholder="quickSearch.pluginOptions.esriGeocodeBBox" class="form-control">
+          </div>
           <div class="col-xs-12">
             <label>Upload Config File(*.txt or *.json) :</label>
             <input type="file" id="fileinput"/>
@@ -192,6 +200,9 @@
               $('#plenario-attr-default').val(configProp['plenario.attribution.default']);
               $('#plenario-dataset-default').val(configProp['plenario.dataset.default']);
               $('#plenario-geo-default').val(configProp['plenario.geo.default']);
+              $('#quick-search-center-point').val(configProp['quick-search-center-point']);
+              $('#quick-search-bounding-box').val(configProp['quick-search-bounding-box']);
+
 
               if('true' === configProp['plenario.enable']) {
                 $("input:radio[name='plenario-enable-flag'][value=true]").prop('checked', true);
@@ -252,6 +263,9 @@
             $('#plenario-dataset-default').val(configProp['plenario.dataset.default']);
             $('#plenario-geo-default').val(configProp['plenario.geo.default']);
             $("input:radio[name='plenario-enable-flag'][value='" + eval(configProp['plenario.enable']) + "']").attr('checked', true);
+
+            $('#quick-search-center-point').val(configProp['quick-search-center-point']);
+            $('#quick-search-bounding-box').val(configProp['quick-search-bounding-box']);
 
             if('true' === configProp['plenario.enable']) {
               $("input:radio[name='plenario-enable-flag'][value=true]").prop('checked', true);
@@ -358,7 +372,10 @@
                 'plenario.attribution.default' : $('#plenario-attr-default').val(),
                 'plenario.dataset.default' : $('#plenario-dataset-default').val(),
                 'plenario.geo.default' : $('#plenario-geo-default').val(),
-                'plenario.enable' : $("input[name='plenario-enable-flag']:checked").val()
+                'plenario.enable' : $("input[name='plenario-enable-flag']:checked").val(),
+                'quick-search-center-point' : $('#quick-search-center-point').val(),
+                'quick-search-bounding-box' : $('#quick-search-bounding-box').val()
+
               }
         };
 
@@ -394,7 +411,9 @@
           'plenario.attribution.default' : $('#plenario-attr-default').val(),
           'plenario.dataset.default' : $('#plenario-dataset-default').val(),
           'plenario.geo.default' : $('#plenario-geo-default').val(),
-          'plenario.enable' : $("input[name='plenario-enable-flag']:checked").val()
+          'plenario.enable' : $("input[name='plenario-enable-flag']:checked").val(),
+          'quick-search-center-point' : $('#quick-search-center-point').val(),
+          'quick-search-bounding-box' : $('#quick-search-bounding-box').val()
         };
 
         var data = new Blob([JSON.stringify(config)], {type: 'text/plain'});
