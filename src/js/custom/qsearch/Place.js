@@ -52,12 +52,7 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
     },
 
     _isNonPOI: function(addrType) {
-        return (addrType === 'PointAddress' ||
-            addrType === 'StreetAddress' ||
-            addrType === 'BuildingName' ||
-            addrType === 'StreetName ' ||
-            addrType === 'StreetInt '
-        );
+        return (addrType.indexOf('address') > -1);
     },
 
     _getAddrTypeScore: function(addrType) {
@@ -80,27 +75,12 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
             if (!a || !b)
                 return 0;
 
-            //sort by Addr_type by accuracy
-            if (me._getAddrTypeScore(a.feature.attributes.Addr_type) >  me._getAddrTypeScore(b.feature.attributes.Addr_type))
-                return -1;
-            else  if (me._getAddrTypeScore(a.feature.attributes.Addr_type) <  me._getAddrTypeScore(b.feature.attributes.Addr_type))
-                return 1;
-            else {
-            }
-
             //sort by score
-            if (a.feature.attributes.Score > b.feature.attributes.Score)
+            if (a.relevance > b.relevance)
                 return -1;
-            else if (a.feature.attributes.Score < b.feature.attributes.Score)
+            else if (a.relevance < b.relevance)
                 return 1;
-            else {
-                //sort by distance
-                if (a.feature.attributes.Distance > b.feature.attributes.Distance)
-                    //the smaller distance the better
-                    return 1;
-                else if (a.feature.attributes.Distance < b.feature.attributes.Distance)
-                    return -1;
-            }
+
             return 0;
         };
     },
@@ -109,21 +89,25 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
         var me = this;
 
         if (this._options.esriGeocodeFilterUsingShape) {
+            console.log("location Filter");
             var filtered = [];
             var layer = L.geoJson(this._options.esriGeocodeFilterUsingShape);
             $.each(locations, function( i, v ) {
-                if (me._isNonPOI(v.feature.attributes.Addr_type)) {
-                    //test if in layer
-                    var r = leafletPip.pointInLayer(L.latLng(v.feature.geometry.y, v.feature.geometry.x), layer);
-                    if (r && (r.length > 0)) {
-                        filtered.push(v);
-                    }
-                } else
-                    filtered.push(v);
+                console.log("Id=" + v.id);
+                /*if (me._isNonPOI(v.id)) {
+                 //console.log("Passed Non-Poi " + v.geometry.coordinates[0]);
+                 //test if in layer
+                 var r = leafletPip.pointInLayer(L.latLng(v.geometry.coordinates[1],v.geometry.coordinates[0]), layer);
+                 if (r && (r.length > 0)) {
+                 //console.log("pushed");
+                 filtered.push(v);
+                 }
+                 } else*/
+                filtered.push(v);
             });
             return filtered;
         } else
-            //return un-changed
+        //return un-changed
             return locations;
     },
 
@@ -138,42 +122,42 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
     _processData: function(data) {
         var o = this._getInitialGeoJson();
 
-        if (data.locations.length >= 1) {
-            console.log("Raw results from ArcGIS WorldGeocoder: (" + data.locations.length + ")", data.locations, this._dumpNames(data.locations));
-            data.locations = this._filterAddresses(data.locations);
+        if (data.features.length >= 1) {
+            console.log("Raw results from ArcGIS WorldGeocoder: (" + data.features.length + ")", data.features, this._dumpNames(data.features));
+            data.features = this._filterAddresses(data.features);
 
-            console.log("Filtered results: ", data.locations, this._dumpNames(data.locations));
+            console.log("Filtered results: ", data.features, this._dumpNames(data.features));
 
             //sort based on score and addr type
-            data.locations.sort(this._getLocationSorter());
+            data.features.sort(this._getLocationSorter());
 
-            console.log("Sorted results: ", data.locations, this._dumpNames(data.locations));
+            console.log("Sorted results: ", data.features, this._dumpNames(data.features));
 
-            for (var i in data.locations) {
+            for (var i in data.features) {
                 //need an Id for interaction between table and map to work
                 var id = ogrid.guid();
 
-                if (data.locations[i].feature) {
+                if (data.features[i]) {
                     o.features.push( {
                         type:"Feature",
                         id: id,
                         "properties": {
-                            "name":  data.locations[i].name,
-                            "score": data.locations[i].feature.attributes.Score,
-                            "type": data.locations[i].feature.attributes.Type,
-                            "lat": data.locations[i].feature.geometry.y,
-                            "long": data.locations[i].feature.geometry.x
+                            "name":  data.features[i].place_name,
+                            "score": data.features[i].relevance,
+                            "type": data.features[i].id//,
+                            //"lat": data.features[i].feature.geometry.y,
+                            //"long": data.features[i].feature.geometry.x
                         },
-                        "geometry": {"type": "Point", "coordinates": [data.locations[i].feature.geometry.x, data.locations[i].feature.geometry.y]}
+                        "geometry": {"type": "Point", "coordinates": data.features[i].geometry.coordinates}
                     });
 
                     //for specific address quick searches, return only 1 if most relevant result (1st result) is an address type not POI
-                    if ( i=='0' &&
-                        data.locations[i].feature.attributes.Addr_type &&
-                        this._isNonPOI(data.locations[i].feature.attributes.Addr_type)) {
-                        console.log("Addr_type" + data.locations[i].feature.attributes.Addr_type +" - Only Non-POI first result will be returned");
-                        break;
-                    }
+                    /* if ( i=='0' &&
+                     data.features[i].feature.attributes.Addr_type &&
+                     this._isNonPOI(data.features[i].feature.attributes.Addr_type)) {
+                     console.log("Addr_type" + data.features[i].feature.attributes.Addr_type +" - Only Non-POI first result will be returned");
+                     break;
+                     }*/
                 }
 
 
@@ -181,6 +165,49 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
             }
 
         }
+        /*if (data.locations.length >= 1) {
+         console.log("Raw results from ArcGIS WorldGeocoder: (" + data.locations.length + ")", data.locations, this._dumpNames(data.locations));
+         data.locations = this._filterAddresses(data.locations);
+
+         console.log("Filtered results: ", data.locations, this._dumpNames(data.locations));
+
+         //sort based on score and addr type
+         data.locations.sort(this._getLocationSorter());
+
+         console.log("Sorted results: ", data.locations, this._dumpNames(data.locations));
+
+         for (var i in data.locations) {
+         //need an Id for interaction between table and map to work
+         var id = ogrid.guid();
+
+         if (data.locations[i].feature) {
+         o.features.push( {
+         type:"Feature",
+         id: id,
+         "properties": {
+         "name":  data.locations[i].name,
+         "score": data.locations[i].feature.attributes.Score,
+         "type": data.locations[i].feature.attributes.Type,
+         "lat": data.locations[i].feature.geometry.y,
+         "long": data.locations[i].feature.geometry.x
+         },
+         "geometry": {"type": "Point", "coordinates": [data.locations[i].feature.geometry.x, data.locations[i].feature.geometry.y]}
+         });
+
+         //for specific address quick searches, return only 1 if most relevant result (1st result) is an address type not POI
+         if ( i=='0' &&
+         data.locations[i].feature.attributes.Addr_type &&
+         this._isNonPOI(data.locations[i].feature.attributes.Addr_type)) {
+         console.log("Addr_type" + data.locations[i].feature.attributes.Addr_type +" - Only Non-POI first result will be returned");
+         break;
+         }
+         }
+
+
+
+         }
+
+         }*/
         return o;
     },
 
@@ -212,9 +239,15 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
 
         $.ajax({
             //use ArcGIS online's geocoder server
-            url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?outSr=4326&outFields=*&maxLocations=' +
-                (me._options.esriGeocodeMaxResults || 20) +
-                '&' + bbox + '&text=' + txt + '&f=json' + '&' + location,
+            //url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?outSr=4326&outFields=*&maxLocations=' +
+            //    (me._options.esriGeocodeMaxResults || 20) +
+            //    '&' + bbox + '&text=' + txt + '&f=json' + '&' + location,
+
+            url: 'https://api.mapbox.com/geocoding/v5/mapbox.places/'+ txt+'.json?' +
+            'country=us&proximity=' + ogrid.Config.quickSearch.center +
+            '&types=address%2Cpoi%2Cneighborhood%2Cpostcode' +
+            '&autocomplete=true&' + bbox +
+            '&access_token=pk.eyJ1IjoiYWRpbGxtYW4iLCJhIjoiY2lwdTd3NzJiMGEzMGgxbnJqdHZwaWVxcSJ9.HpZ7brwhP_TBPjTNgnUjlQ',
             type: 'GET',
             async: true,
             timeout: ogrid.Config.service.timeout,
@@ -228,7 +261,7 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
             },
             success: function(data) {
                 //data coming back is string
-                onSuccess(me._processData(JSON.parse(data)));
+                onSuccess(me._processData(data));
             },
             error: function(jqXHR, txtStatus, errorThrown) {
                 if (txtStatus === 'timeout') {

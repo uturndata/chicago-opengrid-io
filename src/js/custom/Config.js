@@ -68,15 +68,18 @@ ogrid.Config = {
         //first base layer becomes base layer selected by default
         baseLayers:[{
             name: 'Streets',
-            url:'https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer',
+            url:'https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYWRpbGxtYW4iLCJhIjoiY2lwdTd3NzJiMGEzMGgxbnJqdHZwaWVxcSJ9.HpZ7brwhP_TBPjTNgnUjlQ',
+            //url:'https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer',
             //flag to indicate whether Esri's tiledMapLayer plug-in class will be used
-            useEsri: true,
+            //useEsri: true,
+            useEsri:false,
             options: {
                 attribution: ''
             }
         }, {
             name: 'Aerial',
-            url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            url:'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYWRpbGxtYW4iLCJhIjoiY2lwdTd3NzJiMGEzMGgxbnJqdHZwaWVxcSJ9.HpZ7brwhP_TBPjTNgnUjlQ',
+            //url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             useEsri: false,
             options: {
                 attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
@@ -173,7 +176,7 @@ ogrid.Config = {
             places: {
                 //slightly larger than Chicago
                 //around E. Central Rd (Mt. Prospect)&290 and Rt 80 and Rt 65
-                esriGeocodeBBox: '-88.02864,42.06663,-87.30011,41.56614',
+                esriGeocodeBBox: '-88.02864,41.56614,-87.30011,42.06663',
 
                 //add this for more Chicago-centric results esp. with POIs
                 esriGeocodeLocation: '-87.63940, 41.87440',
