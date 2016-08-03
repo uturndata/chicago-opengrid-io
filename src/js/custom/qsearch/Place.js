@@ -230,7 +230,7 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
 
         //overlay with bbox from config, if any
         if (this._options.esriGeocodeBBox) {
-            bbox = 'bbox=' + this._options.esriGeocodeBBox;
+            bbox = 'bbox=' + ogrid.Config.quickSearch.pluginOptions.places.esriGeocodeBBox;
         }
 
         if (this._options.esriGeocodeLocation) {
@@ -243,8 +243,9 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
             //    (me._options.esriGeocodeMaxResults || 20) +
             //    '&' + bbox + '&text=' + txt + '&f=json' + '&' + location,
 
-            url: 'https://api.mapbox.com/geocoding/v5/mapbox.places/'+ txt+'.json?' +
-            'country=us&proximity=' + ogrid.Config.quickSearch.center +
+            url: 'https://api.mapbox.com/geocoding/v5/mapbox.places/'+ txt+'.json?limit=' +
+            (me._options.esriGeocodeMaxResults || 20) +
+            '&country=us&proximity=' + ogrid.Config.quickSearch.center +
             '&types=address%2Cpoi%2Cneighborhood%2Cpostcode' +
             '&autocomplete=true&' + bbox +
             '&access_token=pk.eyJ1IjoiYWRpbGxtYW4iLCJhIjoiY2lwdTd3NzJiMGEzMGgxbnJqdHZwaWVxcSJ9.HpZ7brwhP_TBPjTNgnUjlQ',
