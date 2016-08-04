@@ -89,7 +89,7 @@
           </div>
           <div class="col-xs-12" id="quick-search-bounding-box-div">
             <label>Quick Search Bounding Box :</label>
-            <input id="quick-search-bounding-box" type="text" name="ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBBox" placeholder="ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBBox" class="form-control">
+            <input id="quick-search-bounding-box" type="text" name="ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox" placeholder="ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox" class="form-control">
           </div>
           <div class="col-xs-12">
             <label>Upload Config File(*.txt or *.json) :</label>
@@ -200,8 +200,8 @@
               $('#plenario-attr-default').val(configProp['plenario.attribution.default']);
               $('#plenario-dataset-default').val(configProp['plenario.dataset.default']);
               $('#plenario-geo-default').val(configProp['plenario.geo.default']);
-              $('#quick-search-center-point').val(configProp['quick-search-center-point']);
-              $('#quick-search-bounding-box').val(configProp['quick-search-bounding-box']);
+              $('#quick-search-center-point').val(configProp['ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeLocation']);
+              $('#quick-search-bounding-box').val(configProp['ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox']);
 
 
               if('true' === configProp['plenario.enable']) {
@@ -264,8 +264,8 @@
             $('#plenario-geo-default').val(configProp['plenario.geo.default']);
             $("input:radio[name='plenario-enable-flag'][value='" + eval(configProp['plenario.enable']) + "']").attr('checked', true);
 
-            $('#quick-search-center-point').val(configProp['quick-search-center-point']);
-            $('#quick-search-bounding-box').val(configProp['quick-search-bounding-box']);
+            $('#quick-search-center-point').val(configProp['ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeLocation']);
+            $('#quick-search-bounding-box').val(configProp['ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox']);
 
             if('true' === configProp['plenario.enable']) {
               $("input:radio[name='plenario-enable-flag'][value=true]").prop('checked', true);
@@ -373,8 +373,8 @@
                 'plenario.dataset.default' : $('#plenario-dataset-default').val(),
                 'plenario.geo.default' : $('#plenario-geo-default').val(),
                 'plenario.enable' : $("input[name='plenario-enable-flag']:checked").val(),
-                'quick-search-center-point' : $('#quick-search-center-point').val(),
-                'quick-search-bounding-box' : $('#quick-search-bounding-box').val()
+                'ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeLocation' : $('#quick-search-center-point').val(),
+                'ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox' : $('#quick-search-bounding-box').val()
 
               }
         };
@@ -412,8 +412,8 @@
           'plenario.dataset.default' : $('#plenario-dataset-default').val(),
           'plenario.geo.default' : $('#plenario-geo-default').val(),
           'plenario.enable' : $("input[name='plenario-enable-flag']:checked").val(),
-          'quick-search-center-point' : $('#quick-search-center-point').val(),
-          'quick-search-bounding-box' : $('#quick-search-bounding-box').val()
+          'ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeLocation' : $('#quick-search-center-point').val(),
+          'ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox' : $('#quick-search-bounding-box').val()
         };
 
         var data = new Blob([JSON.stringify(config)], {type: 'text/plain'});

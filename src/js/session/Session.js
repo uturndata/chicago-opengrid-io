@@ -56,6 +56,12 @@ ogrid.Session = ogrid.Class.extend({
             } else {
               ogrid.Config.help.configSectionTitle = configProp['ogrid.Config.help.configSectionTitle'];
               ogrid.Config.help.configSectionText = configProp['ogrid.Config.help.configSectionText'];
+
+              ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeLocation = configProp['ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeLocation'];
+              ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox = configProp['ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox'];
+
+              console.log('ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeLocation ', ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeLocation );
+              console.log('ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox', ogrid.Config.quickSearch.plugInOptions.places.esriGeocodeBox );
             }
           } else if(response[1] && response[1].result === 'failure') {
 

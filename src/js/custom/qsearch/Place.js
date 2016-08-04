@@ -227,10 +227,11 @@ ogrid.QSearchProcessor.Place = ogrid.QSearchProcessor.extend({
         //default bounding box to use for esri geoCode search (East IL area)
         var bbox = 'bbox=-89.2700, 37.0000, -87.5000, 42.5000';
         var location = '';
+        console.log('ogrid.Config.quickSearch.pluginOptions.places.esriGeocodeBox', ogrid.Config.quickSearch.pluginOptions.places.esriGeocodeBox);
 
         //overlay with bbox from config, if any
         if (this._options.esriGeocodeBBox) {
-            bbox = 'bbox=' + ogrid.Config.quickSearch.pluginOptions.places.esriGeocodeBBox;
+            bbox = 'bbox=' + ogrid.Config.quickSearch.pluginOptions.places.esriGeocodeBox;
         }
 
         if (this._options.esriGeocodeLocation) {
